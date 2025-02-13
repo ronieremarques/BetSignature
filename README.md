@@ -51,4 +51,7 @@ npm run dev
 - Sistema de pagamentos
 - Confirmações por e-mail
 - Histórico de apostas
-- Termos de uso e políticas 
+- Termos de uso e políticas
+
+# TUTORIAL
+https://vimeo.com/1056472261/0ae8415da7?share=copy
