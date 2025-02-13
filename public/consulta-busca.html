@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Apostas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --success-color: #22c55e;
+            --error-color: #ef4444;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+
+        .search-header {
+            margin-bottom: 2rem;
+        }
+
+        .search-header i {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .search-header h1 {
+            font-size: 2.5rem;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .search-header p {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+            font-size: 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: var(--text-color);
+            opacity: 0.5;
+        }
+
+        .results-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .results-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item:hover {
+            background: var(--secondary-color);
+            transform: translateX(10px);
+        }
+
+        .result-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .result-info {
+            flex: 1;
+        }
+
+        .result-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .result-details {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .result-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .no-results {
+            padding: 3rem 2rem;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            color: var(--border-color);
+            margin-bottom: 1rem;
+        }
+
+        .no-results p {
+            font-size: 1.1rem;
+            opacity: 0.7;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-top: 2rem;
+        }
+
+        .back-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .search-header h1 {
+                font-size: 2rem;
+            }
+
+            .result-details {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <div class="search-header">
+            <i class="fas fa-search"></i>
+            <h1>Consultar Apostas</h1>
+            <p>Digite o nome do apostador para visualizar os detalhes</p>
+        </div>
+
+        <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" 
+                   class="search-input" 
+                   placeholder="Digite o nome do apostador..."
+                   id="searchInput"
+                   autocomplete="off">
+        </div>
+
+        <div class="results-container" id="resultsContainer">
+            <!-- Resultados serão inseridos aqui via JavaScript -->
+        </div>
+
+        <a href="/" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>Voltar para Home</span>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const resultsContainer = document.getElementById('resultsContainer');
+        let searchTimeout;
+
+        function formatarData(dataISO) {
+            return new Date(dataISO).toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function createResultItem(aposta) {
+            return `
+                <a href="/consulta/${encodeURIComponent(aposta.nome)}" class="result-item">
+                    <div class="result-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="result-info">
+                        <div class="result-name">${aposta.nome}</div>
+                        <div class="result-details">
+                            <div class="result-detail">
+                                <i class="fas fa-gamepad"></i>
+                                <span>${aposta.historico.link.nomeAposta}</span>
+                            </div>
+                            <div class="result-detail">
+                                <i class="fas fa-calendar"></i>
+                                <span>${formatarData(aposta.dataAssinatura)}</span>
+                            </div>
+                            <div class="result-detail">
+                                <i class="fas fa-users"></i>
+                                <span>${aposta.historico.link.apostadoresConfirmados}/${aposta.historico.link.totalApostadores} apostadores</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }
+
+        function showNoResults() {
+            resultsContainer.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-search"></i>
+                    <p>Nenhum resultado encontrado</p>
+                </div>
+            `;
+        }
+
+        async function searchApostas(query) {
+            try {
+                const response = await fetch(`/api/consulta/${encodeURIComponent(query)}`);
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        showNoResults();
+                        return;
+                    }
+                    throw new Error('Erro ao buscar apostas');
+                }
+
+                const data = await response.json();
+                
+                if (data.length === 0) {
+                    showNoResults();
+                    return;
+                }
+
+                // Ordenar por data mais recente
+                data.sort((a, b) => new Date(b.dataAssinatura) - new Date(a.dataAssinatura));
+
+                const resultsHTML = data.map(createResultItem).join('');
+                resultsContainer.innerHTML = resultsHTML;
+                resultsContainer.classList.add('show');
+
+            } catch (error) {
+                console.error('Erro na busca:', error);
+                Swal.fire({
+                    title: 'Erro',
+                    text: 'Erro ao buscar apostas. Tente novamente.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#2563eb'
+                });
+            }
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            
+            clearTimeout(searchTimeout);
+            
+            if (query.length >= 3) {
+                resultsContainer.classList.add('show');
+                searchTimeout = setTimeout(() => {
+                    searchApostas(query);
+                }, 300);
+            } else {
+                resultsContainer.classList.remove('show');
+                resultsContainer.innerHTML = '';
+            }
+        });
+
+        // Iniciar com foco no campo de busca
+        searchInput.focus();
+    </script>
+</body>
+</html> 

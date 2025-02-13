@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Link - Sistema de Assinaturas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .create-form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .result-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 2px solid #e2e8f0;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .copy-button {
+            background: none;
+            border: none;
+            color: #2563eb;
+            cursor: pointer;
+            padding: 0.5rem;
+            margin-left: 0.5rem;
+        }
+
+        .copy-button:hover {
+            color: #1d4ed8;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .result-item span {
+            flex: 1;
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-link"></i>
+                <h1>Criar Link</h1>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <form class="create-form" id="createLinkForm">
+            <div class="form-group">
+                <label for="nomeAposta">Nome da Aposta</label>
+                <input type="text" id="nomeAposta" name="nomeAposta" required 
+                       placeholder="Ex: Aposta Futebol">
+            </div>
+
+            <div class="form-group">
+                <label for="numApostadores">Número de Apostadores</label>
+                <input type="number" id="numApostadores" name="numApostadores" required 
+                       min="1" max="100" placeholder="Ex: 5">
+            </div>
+
+            <div class="form-group">
+                <label for="redirectUrl">URL de Redirecionamento</label>
+                <input type="url" id="redirectUrl" name="redirectUrl" required 
+                       placeholder="Ex: https://exemplo.com">
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                <span>Criar Link</span>
+            </button>
+        </form>
+
+        <div class="result-section" id="resultSection">
+            <h3><i class="fas fa-check-circle"></i> Link Criado com Sucesso!</h3>
+            
+            <div class="result-item">
+                <span>ID do Link:</span>
+                <span id="linkId"></span>
+                <button class="copy-button" data-copy="linkId">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+
+            <div class="result-item">
+                <span>URL do Link:</span>
+                <span id="linkUrl"></span>
+                <button class="copy-button" data-copy="linkUrl">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('createLinkForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                nomeAposta: document.getElementById('nomeAposta').value,
+                numApostadores: document.getElementById('numApostadores').value,
+                redirectUrl: document.getElementById('redirectUrl').value
+            };
+
+            try {
+                const response = await fetch('/api/links', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const resultSection = document.getElementById('resultSection');
+                    const linkId = document.getElementById('linkId');
+                    const linkUrl = document.getElementById('linkUrl');
+
+                    const fullUrl = `${window.location.origin}/links?id=${result.linkId}`;
+
+                    linkId.textContent = result.linkId;
+                    linkUrl.textContent = fullUrl;
+
+                    resultSection.classList.add('show');
+                } else {
+                    throw new Error(result.error || 'Erro ao criar link');
+                }
+            } catch (error) {
+                alert('Erro ao criar link: ' + error.message);
+            }
+        });
+
+        // Função para copiar texto
+        document.querySelectorAll('.copy-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.getAttribute('data-copy');
+                const text = document.getElementById(targetId).textContent;
+                
+                navigator.clipboard.writeText(text).then(() => {
+                    const icon = button.querySelector('i');
+                    icon.className = 'fas fa-check';
+                    setTimeout(() => {
+                        icon.className = 'fas fa-copy';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Erro ao copiar:', err);
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

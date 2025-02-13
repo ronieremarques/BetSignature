@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assinatura Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --success-color: #22c55e;
+            --error-color: #ef4444;
+            --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--secondary-color);
+            min-height: 100vh;
+        }
+
+        header {
+            background: #fff;
+            box-shadow: var(--box-shadow);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .logo h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        main {
+            padding-top: 5rem;
+            min-height: calc(100vh - 4rem);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            max-width: 600px;
+            margin: 2rem auto;
+            position: relative;
+            padding: 0 1rem;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            left: 3rem;
+            right: 3rem;
+            height: 2px;
+            background: var(--border-color);
+            z-index: -1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            position: relative;
+            background: var(--secondary-color);
+            padding: 0 0.5rem;
+        }
+
+        .step-number {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-number {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+            transform: scale(1.2);
+        }
+
+        .step-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-title i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .section-title h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .terms-content {
+            background: var(--secondary-color);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .terms-warning {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .terms-warning i {
+            color: var(--error-color);
+            font-size: 1.25rem;
+            margin-top: 0.25rem;
+        }
+
+        .terms-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .terms-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .terms-list i {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            margin-top: 0.25rem;
+        }
+
+        .signature-pad-container {
+            margin: 2rem 0;
+        }
+
+        .signature-instructions {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .instruction-step {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--secondary-color);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .instruction-step i {
+            color: var(--primary-color);
+        }
+
+        #signaturePad {
+            width: 100%;
+            height: 200px;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            background: #fff;
+            cursor: crosshair;
+        }
+
+        .signature-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .upload-section {
+            margin: 2rem 0;
+        }
+
+        .upload-container {
+            border: 2px dashed var(--border-color);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            background: var(--secondary-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-container.dragover {
+            border-color: var(--primary-color);
+            background: #f0f7ff;
+        }
+
+        .upload-container i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .selected-file {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--primary-color);
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .terms-accept {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .accept-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .accept-checkbox input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.25rem;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .steps {
+                flex-direction: column;
+                gap: 1.5rem;
+                align-items: flex-start;
+                padding: 0 2rem;
+            }
+
+            .steps::before {
+                left: 2.5rem;
+                right: auto;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                height: 100%;
+            }
+
+            .step {
+                flex-direction: row;
+                width: 100%;
+                padding-left: 1rem;
+            }
+
+            .signature-instructions {
+                flex-direction: column;
+            }
+
+            .terms-accept {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .accept-checkbox {
+                justify-content: center;
+            }
+        }
+
+        .name-input-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .name-input-container label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .signature-name {
+            text-align: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-file-signature"></i>
+                <h1>Assinatura Digital</h1>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="steps">
+                    <div class="step active">
+                        <div class="step-number">1</div>
+                        <div class="step-text">Ler Termos</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-text">Assinar</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                    <div class="step-text">Enviar Comprovante</div>
+                </div>
+                    </div>
+
+            <div class="form-container">
+                <div class="section-title">
+                    <i class="fas fa-file-contract"></i>
+                    <h2>Termos e Condições</h2>
+                </div>
+
+                <div class="terms-content">
+                    <div class="terms-warning">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Por favor, leia atentamente os termos abaixo antes de prosseguir.</p>
+                    </div>
+
+                    <ul class="terms-list">
+                        <li>
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>
+                                <strong>Apostas Irreversíveis:</strong>
+                                <p>Após confirmação, as apostas NÃO podem ser canceladas ou reembolsadas.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>
+                                <strong>Responsabilidade:</strong>
+                                <p>Você é TOTALMENTE responsável pelo valor apostado.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>
+                                <strong>Idade Legal:</strong>
+                                <p>Ao aceitar, você confirma ter idade legal para realizar apostas.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>
+                                <strong>Sem Reembolso:</strong>
+                                <p>NÃO haverá estorno ou cancelamento após a confirmação do pagamento.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Comprovante:</strong>
+                                <p>O comprovante enviado deve ser legível, válido e conter seu nome.</p>
+                    </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Assinatura:</strong>
+                                <p>A assinatura deve ser feita pela própria pessoa e corresponder ao nome no comprovante.</p>
+                    </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="signature-pad-container">
+                    <div class="section-title">
+                        <i class="fas fa-pen-fancy"></i>
+                        <h2>Sua Assinatura</h2>
+                    </div>
+
+                    <div class="name-input-container">
+                        <label for="signer-name">Digite seu nome completo:</label>
+                        <input type="text" id="signer-name" class="form-input" placeholder="Ex: João Silva" required>
+                    </div>
+                    
+                    <div class="signature-instructions">
+                        <div class="instruction-step">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <p>Use o mouse ou toque na tela para assinar</p>
+                        </div>
+                        <div class="instruction-step">
+                            <i class="fas fa-arrows-alt"></i>
+                            <p>Desenhe sua assinatura no espaço abaixo</p>
+                        </div>
+                    </div>
+
+                        <canvas id="signaturePad"></canvas>
+                    <p class="signature-name" id="signature-name"></p>
+
+                    <div class="signature-actions">
+                            <button id="clearSignature" class="btn btn-secondary">
+                                <i class="fas fa-eraser"></i>
+                                Limpar Assinatura
+                            </button>
+                        </div>
+                    </div>
+
+                <div class="upload-section">
+                    <div class="section-title">
+                        <i class="fas fa-upload"></i>
+                        <h2>Enviar Comprovante</h2>
+                </div>
+                
+                    <div class="upload-container" id="uploadContainer">
+                        <input type="file" id="receipt" accept="image/*,.pdf" class="file-input" hidden>
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p class="upload-text">Clique ou arraste o arquivo aqui</p>
+                        <p class="upload-hint">Formatos aceitos: JPG, PNG, PDF (máx. 5MB)</p>
+                        <p class="selected-file" id="selectedFileName"></p>
+                        </div>
+                    </div>
+
+                <div class="terms-accept">
+                    <label class="accept-checkbox">
+                        <input type="checkbox" id="accept-terms" required>
+                        <span>Eu li e aceito os termos e condições</span>
+                    </label>
+
+                    <button id="submit-form" class="btn btn-primary" disabled>
+                        <span>Apostar Agora</span>
+                        </button>
+                    </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html> 

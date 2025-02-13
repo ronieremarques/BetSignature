@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Assinatura</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --success-color: #22c55e;
+            --error-color: #ef4444;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .consulta-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: var(--box-shadow);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.6s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .consulta-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            padding: 3rem 2rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .consulta-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/></svg>') center/50px 50px;
+            opacity: 0.1;
+            animation: rotate 60s linear infinite;
+        }
+
+        .consulta-header i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 50%;
+        }
+
+        .consulta-header h1 {
+            font-size: 2.5rem;
+            margin: 1rem 0;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-wrapper {
+            padding: 2rem;
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .info-header {
+            background: var(--secondary-color);
+            padding: 1.5rem;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .info-header i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            background: white;
+            padding: 0.8rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .info-item {
+            background: var(--secondary-color);
+            padding: 1.5rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-item:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-item strong {
+            display: block;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-item span {
+            display: block;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 99px;
+            font-weight: 600;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .status-badge i {
+            font-size: 1.2rem;
+            color: white;
+            animation: pulse 2s infinite;
+            margin: 0;
+            padding: 0;
+            background: none;
+            box-shadow: none;
+        }
+
+        .status-badge span {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .image-preview {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .image-preview strong {
+            display: block;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .image-preview img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-top: 2rem;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .back-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .back-button i {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .back-button:hover i {
+            transform: translateX(-4px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Modal para visualização de imagens */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            padding: 2rem;
+            cursor: zoom-out;
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90vh;
+            margin: auto;
+            display: block;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .consulta-header {
+                padding: 2rem 1rem;
+            }
+
+            .consulta-header h1 {
+                font-size: 2rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            .info-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .status-badge {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        .share-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .share-box {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .share-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .share-header i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .share-header h3 {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .share-content {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .share-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--text-color);
+            background: var(--secondary-color);
+            cursor: text;
+        }
+
+        .share-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .copy-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.2rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .copy-button i {
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .share-content {
+                flex-direction: column;
+            }
+
+            .share-input {
+                width: 100%;
+            }
+
+            .copy-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .image-actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.2rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .action-button i {
+            font-size: 1rem;
+        }
+
+        .content-center {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .info-text {
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .action-button-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            min-width: 250px;
+        }
+
+        .action-button-large i {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="consulta-container">
+        <div class="consulta-header">
+            <i class="fas fa-file-signature"></i>
+            <h1>Detalhes da Assinatura</h1>
+            <div class="status-badge">
+                <i class="fas fa-list" style="color: white;"></i>
+                <span id="totalApostasEncontradas">Carregando apostas...</span>
+            </div>
+        </div>
+
+        <div class="content-wrapper" id="apostasContainer">
+            <!-- As apostas serão inseridas aqui dinamicamente -->
+        </div>
+
+        <a href="/" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>Voltar para Home</span>
+        </a>
+
+        <div class="share-section">
+            <div class="share-box">
+                <div class="share-header">
+                    <i class="fas fa-share-alt"></i>
+                    <h3>Link para Compartilhar</h3>
+                </div>
+                <div class="share-content">
+                    <input type="text" id="shareLink" readonly class="share-input" value="">
+                    <button onclick="copyLink()" class="copy-button">
+                        <i class="fas fa-copy"></i>
+                        <span>Copiar Link</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para visualização de imagens -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <img id="modalImage" src="" alt="Imagem Ampliada">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Função para formatar data
+        function formatarData(dataISO) {
+            return new Date(dataISO).toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Funções do modal de imagem
+        function openModal(imgSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'flex';
+            modalImg.src = imgSrc;
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Função para extrair o nome da URL
+        function getNomeFromUrl() {
+            const path = window.location.pathname;
+            const parts = path.split('/');
+            return parts[parts.length - 1];
+        }
+
+        // Função para copiar o link
+        function copyLink() {
+            const shareInput = document.getElementById('shareLink');
+            shareInput.select();
+            document.execCommand('copy');
+
+            // Feedback visual
+            const copyButton = document.querySelector('.copy-button');
+            const originalText = copyButton.innerHTML;
+            copyButton.innerHTML = '<i class="fas fa-check"></i><span>Copiado!</span>';
+            
+            setTimeout(() => {
+                copyButton.innerHTML = originalText;
+            }, 2000);
+        }
+
+        // Carregar dados da consulta
+        async function carregarDados() {
+            try {
+                const nome = getNomeFromUrl();
+                
+                if (!nome) {
+                    throw new Error('Nome não fornecido');
+                }
+
+                const response = await fetch(`/api/consulta/${encodeURIComponent(nome)}`);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Erro ao carregar dados');
+                }
+
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    throw new Error('Nenhum registro encontrado');
+                }
+
+                // Atualizar o contador de apostas
+                document.getElementById('totalApostasEncontradas').textContent = 
+                    `${data.length} aposta${data.length > 1 ? 's' : ''} encontrada${data.length > 1 ? 's' : ''}`;
+
+                // Ordenar por data mais recente
+                data.sort((a, b) => new Date(b.dataAssinatura) - new Date(a.dataAssinatura));
+
+                // Container para todas as apostas
+                const apostasContainer = document.getElementById('apostasContainer');
+                apostasContainer.innerHTML = ''; // Limpar conteúdo existente
+
+                // Criar seção para cada aposta
+                data.forEach((registro, index) => {
+                    const apostaSection = document.createElement('div');
+                    apostaSection.className = 'aposta-section';
+                    if (index > 0) apostaSection.style.marginTop = '3rem';
+
+                    apostaSection.innerHTML = `
+                        ${index > 0 ? '<hr style="margin: 2rem 0; border: none; border-top: 2px dashed var(--border-color);">' : ''}
+                        <div class="info-section">
+                            <div class="info-header">
+                                <i class="fas fa-user-circle"></i>
+                                <h2>Dados do Apostador - Aposta ${index + 1}</h2>
+                            </div>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <strong>Nome Completo</strong>
+                                    <span>${registro.nome}</span>
+                                </div>
+                                <div class="info-item">
+                                    <strong>Data da Assinatura</strong>
+                                    <span>${formatarData(registro.dataAssinatura)}</span>
+                                </div>
+                                <div class="info-item">
+                                    <strong>IP do Apostador</strong>
+                                    <span>${registro.historico.dadosPreenchidos.ip}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-header">
+                                <i class="fas fa-link"></i>
+                                <h2>Dados do Link - Aposta ${index + 1}</h2>
+                            </div>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <strong>Nome da Aposta</strong>
+                                    <span>${registro.historico.link.nomeAposta}</span>
+                                </div>
+                                <div class="info-item">
+                                    <strong>Total de Apostadores</strong>
+                                    <span>${registro.historico.link.totalApostadores}</span>
+                                </div>
+                                <div class="info-item">
+                                    <strong>Apostadores Confirmados</strong>
+                                    <span>${registro.historico.link.apostadoresConfirmados}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-header">
+                                <i class="fas fa-file-alt"></i>
+                                <h2>Comprovante e Assinatura - Aposta ${index + 1}</h2>
+                            </div>
+                            <div class="image-preview">
+                                <strong>Assinatura Digital</strong>
+                                <img src="/${registro.assinatura}" alt="Assinatura Digital" onclick="openModal(this.src)">
+                                <div class="image-actions">
+                                    <a href="/${registro.assinatura}" target="_blank" class="action-button">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        <span>Abrir Assinatura</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="image-preview">
+                                <strong>Comprovante</strong>
+                                <img src="/${registro.comprovante}" alt="Comprovante" onclick="openModal(this.src)">
+                                <div class="image-actions">
+                                    <a href="/${registro.comprovante}" target="_blank" class="action-button">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        <span>Abrir Comprovante</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        ${registro.screenshotFormulario ? `
+                        <div class="info-section">
+                            <div class="info-header">
+                                <i class="fas fa-clipboard-check"></i>
+                                <h2>Formulário Preenchido - Aposta ${index + 1}</h2>
+                            </div>
+                            <div class="image-preview">
+                                <img src="/${registro.screenshotFormulario}" alt="Formulário Preenchido" onclick="openModal(this.src)">
+                                <div class="image-actions">
+                                    <a href="/${registro.screenshotFormulario}" target="_blank" class="action-button">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        <span>Abrir Formulário</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <div class="info-section">
+                            <div class="info-header">
+                                <i class="fas fa-code"></i>
+                                <h2>Consulta Completa - Aposta ${index + 1}</h2>
+                            </div>
+                            <div class="content-center">
+                                <p class="info-text">Visualize todos os dados desta aposta em formato JSON</p>
+                                <div class="button-container">
+                                    <a href="https://adm.discloud.app/api/consulta/${encodeURIComponent(nome)}" target="_blank" class="action-button action-button-large">
+                                        <i class="fas fa-database"></i>
+                                        <span>Abrir Consulta Completa</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    apostasContainer.appendChild(apostaSection);
+                });
+
+                // Configurar o link de compartilhamento
+                document.getElementById('shareLink').value = window.location.href;
+
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                Swal.fire({
+                    title: 'Erro',
+                    text: error.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#2563eb'
+                }).then(() => {
+                    window.location.href = '/';
+                });
+            }
+        }
+
+        // Carregar dados quando a página carregar
+        document.addEventListener('DOMContentLoaded', carregarDados);
+
+        // Fechar modal com tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html> 
